@@ -1,3 +1,4 @@
+// server.js
 const express = require("express")
 const http = require("http")
 const { Server } = require("socket.io")
@@ -15,15 +16,6 @@ const connectedClients = new Set()
 // In-memory store for server metrics (in a real app, this would come from a database)
 const serverMetrics = {}
 
-// Add unhandledRejection handler to catch and log path-to-regexp errors
-process.on('unhandledRejection', (reason, promise) => {
-  if (reason && reason.toString().includes('pathToRegexpError')) {
-    console.warn('Path-to-RegExp Warning:', reason.toString());
-  } else {
-    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  }
-});
-
 app.prepare().then(() => {
   const expressApp = express()
   const server = http.createServer(expressApp)
@@ -35,8 +27,6 @@ app.prepare().then(() => {
       methods: ["GET", "POST"],
       credentials: true,
     },
-    // Fix path-to-regexp issues in Socket.IO paths
-    path: "/socket.io/"
   })
 
   // Socket.IO connection handler
@@ -47,15 +37,13 @@ app.prepare().then(() => {
     // Send initial connection status
     socket.emit("connection_status", { connected: true })
 
-    // Join rooms for specific data types - Fix any unnamed parameters
+    // Join rooms for specific data types
     socket.on("join_server", (serverId) => {
-      if (!serverId) return; // Validate serverId
       console.log(`Client ${socket.id} joined server room: ${serverId}`)
       socket.join(`server:${serverId}`)
     })
 
     socket.on("leave_server", (serverId) => {
-      if (!serverId) return; // Validate serverId
       console.log(`Client ${socket.id} left server room: ${serverId}`)
       socket.leave(`server:${serverId}`)
     })
@@ -70,19 +58,16 @@ app.prepare().then(() => {
   // Make io accessible to our API routes
   expressApp.set("io", io)
 
-  // Fix for Express 5.0 - Add named parameters to all routes
-  // Example of a fixed API route with named parameter
-  expressApp.get('/api/test/:paramName', (req, res) => {
-    res.json({ message: 'Test route with named parameter' });
-  });
+  // Fix for Express 5.0.0 - Update any wildcard routes
+  // Example of a fixed wildcard route (if you have any)
+  expressApp.get("/api/servers/:serverId/logs/:logType(*)/:timestamp?", (req, res) => {
+    // This is just an example - replace with your actual route handler
+    const { serverId, logType, timestamp } = req.params
+    res.json({ serverId, logType, timestamp })
+  })
 
-  // Fix for wildcard routes - add parameter name
-  expressApp.get('/api/files/*filePath', (req, res) => {
-    res.json({ filePath: req.params.filePath });
-  });
-
-  // Default route handler for Next.js
-  expressApp.all("*", (req, res) => {
+  // Default route handler for Next.js - FIXED for Express 5
+  expressApp.all("/:path(*)", (req, res) => {
     return handle(req, res)
   })
 

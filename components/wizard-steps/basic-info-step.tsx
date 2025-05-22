@@ -1,3 +1,4 @@
+// components/wizard-steps/basic-info-step.tsx
 "use client"
 
 import { useState, useEffect } from "react"
@@ -7,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertCircle } from "lucide-react"
+import { AlertCircle } from 'lucide-react'
 
 interface BasicInfoStepProps {
   formData: ServerFormData

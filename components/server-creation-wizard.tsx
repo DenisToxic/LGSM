@@ -1,8 +1,10 @@
+// components/server-creation-wizard.tsx
 "use client"
 
 import { useState } from "react"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button"
 import { BasicInfoStep } from "@/components/wizard-steps/basic-info-step"
 import { TemplateSelectionStep } from "@/components/wizard-steps/template-selection-step"
 import { ServerConfigStep } from "@/components/wizard-steps/server-config-step"
@@ -201,6 +203,17 @@ export function ServerCreationWizard({ open, onOpenChange }: ServerCreationWizar
     }
   }
 
+  // Determine if the current step is valid
+  const isStepValid = () => {
+    switch (currentStep) {
+      case 0:
+        return formData.name.trim() !== "" && formData.gameType !== "";
+      // Add validation for other steps as needed
+      default:
+        return true;
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[800px]">
@@ -226,6 +239,24 @@ export function ServerCreationWizard({ open, onOpenChange }: ServerCreationWizar
             <TabsContent value={steps[currentStep].id}>{renderStepContent()}</TabsContent>
           </Tabs>
         </div>
+
+        {/* Add DialogFooter with navigation buttons */}
+        <DialogFooter className="flex justify-between">
+          <Button 
+            variant="outline" 
+            onClick={handleBack}
+            disabled={currentStep === 0}
+          >
+            Back
+          </Button>
+          
+          <Button 
+            onClick={currentStep === steps.length - 1 ? handleSubmit : handleNext}
+            disabled={!isStepValid()}
+          >
+            {currentStep === steps.length - 1 ? "Create Server" : "Next"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

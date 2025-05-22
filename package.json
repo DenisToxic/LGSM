@@ -1,11 +1,13 @@
 {
-  "name": "my-v0-project",
+  "name": "GSM",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "socket": "node server.js",
+    "dev:all": "concurrently \"npm run dev\" \"npm run socket\"",
     "lint": "next lint"
   },
   "dependencies": {

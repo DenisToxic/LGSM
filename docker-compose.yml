@@ -5,10 +5,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: game-server-app
     restart: unless-stopped
     ports:
-      - "3000:3000"
-      - "3001:3001"
+      - "3000:3000"  # Next.js application
+      - "3001:3001"  # WebSocket server
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=http://localhost:3000/api
@@ -25,6 +26,7 @@ services:
 
   db:
     image: postgres:14-alpine
+    container_name: game-server-db
     restart: unless-stopped
     environment:
       - POSTGRES_USER=gameserver
@@ -43,4 +45,6 @@ networks:
 
 volumes:
   app-data:
+    driver: local
   postgres-data:
+    driver: local
