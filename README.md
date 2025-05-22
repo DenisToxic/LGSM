@@ -33,8 +33,8 @@ A comprehensive web-based Game Server Management System with real-time monitorin
 
 
 ```shellscript
-git clone https://github.com/DenisToxic/test.git
-cd test
+git clone https://github.com/DenisToxic/LGSM.git
+cd LGSM
 ```
 
 2. Install dependencies:
