@@ -1,172 +1,173 @@
-### Game Server Management System
+**Game Server Management System**
 
-A comprehensive web-based Game Server Management System with real-time monitoring and control.
+[![Build Status](https://img.shields.io/github/actions/workflow/status/DenisToxic/LGSM/ci.yml?branch=main)](https://github.com/DenisToxic/LGSM/actions) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+A comprehensive web-based Game Server Management System with real-time monitoring, control, and automated resource management.
+
+---
+
+## Table of Contents
+
+1. [Features](#features)
+2. [Getting Started](#getting-started)
+
+   * [Prerequisites](#prerequisites)
+   * [Installation](#installation)
+   * [Configuration](#configuration)
+   * [Running the App](#running-the-app)
+3. [Architecture Overview](#architecture-overview)
+
+   * [WebSocket Implementation](#websocket-implementation)
+   * [Database](#database)
+   * [Docker Integration](#docker-integration)
+   * [Backup System](#backup-system)
+   * [Monitoring & Alerts](#monitoring--alerts)
+4. [Deployment](#deployment)
+
+   * [Build & Start](#build--start)
+   * [Production Considerations](#production-considerations)
+5. [Troubleshooting](#troubleshooting)
+6. [Contributing](#contributing)
+7. [License](#license)
+
+---
 
 ## Features
 
-- Real-time server monitoring with WebSockets
-- Server creation, management, and control
-- User authentication and authorization
-- Console access to game servers
-- Activity tracking and notifications
-- Resource allocation and monitoring
-- Comprehensive backup and restore system
-- Docker container management
-- Cloud deployment to multiple providers (AWS, GCP, Azure, DigitalOcean, Linode)
-- Advanced monitoring dashboard with alerts
-- Detailed reporting system
+* **Real-time Server Monitoring** via WebSockets
+* **Server Lifecycle Management** (create, start, stop, restart)
+* **User Authentication & Authorization** (Role-based access)
+* **Interactive Console Access** to game servers
+* **Activity Tracking & Notifications**
+* **Resource Allocation & Usage Metrics**
+* **Automated Backups & One-click Restore**
+* **Docker Container Management** (images, volumes, containers)
+* **Cloud Deployment Support** (AWS, GCP, Azure, DigitalOcean, Linode)
+* **Advanced Monitoring Dashboard** with historical charts and alerts
+* **Detailed Reporting** (exportable logs & metrics)
 
+---
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18.x or higher
-- npm or yarn
-- Docker (optional, for container management features)
-- PostgreSQL (optional, for production database)
-
+* [Node.js](https://nodejs.org/) v18.x or higher
+* [npm](https://www.npmjs.com/) or [Yarn](https://yarnpkg.com/)
+* [Docker](https://www.docker.com/) *(optional, for container management)*
+* [PostgreSQL](https://www.postgresql.org/) *(optional, for production database)*
 
 ### Installation
 
-1. Clone the repository:
+1. **Clone the repository**
 
+   ```bash
+   git clone https://github.com/DenisToxic/LGSM.git
+   cd LGSM
+   ```
 
-```shellscript
-git clone https://github.com/DenisToxic/LGSM.git
-cd LGSM
-```
+2. **Install dependencies**
 
-2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
 
+### Configuration
 
-```shellscript
-npm install
-# or
-yarn install
-```
+Create a `.env.local` in the project root with the following variables:
 
-3. Create a `.env.local` file with the following environment variables:
-
-
-```shellscript
-# Server configuration
+```dotenv
+# Server settings
 PORT=3000
 NODE_ENV=development
 
-# Socket.IO configuration
+# WebSocket & API URLs
 NEXT_PUBLIC_SOCKET_URL=http://localhost:3000
 NEXT_PUBLIC_API_URL=http://localhost:3000
 
-# Database configuration (optional)
+# Database (PostgreSQL)
 DATABASE_URL="postgresql://postgres:password@localhost:5432/gameserver"
 
-# Docker configuration (optional)
+# Docker (if using container features)
 DOCKER_HOST="unix:///var/run/docker.sock"
 ```
 
-4. Start the development server:
+### Running the App
 
+Start the development server:
 
-```shellscript
+```bash
 npm run dev
 # or
 yarn dev
 ```
 
-5. Open your browser and navigate to `http://localhost:3000`
+Open your browser at [http://localhost:3000](http://localhost:3000).
 
+---
 
-## WebSocket Implementation
+## Architecture Overview
 
-This project uses Socket.IO for real-time communication between the server and clients. Here's how it works:
+### WebSocket Implementation
 
-### Server-Side
+* Uses **Socket.IO** for bidirectional real-time communication.
+* **Server-Side**: Custom Express server integrates Next.js and Socket.IO. Emits events for updates and metrics.
+* **Client-Side**: `WebSocketContext` provides hooks (`useServers`, `useMetrics`, `useActivities`) for subscribing to events.
 
-- A custom Express server integrates Next.js with Socket.IO
-- Socket.IO events are emitted for server status changes, metrics updates, and activities
-- API routes can emit events using the Socket.IO instance
+**Key Events**:
 
-
-### Client-Side
-
-- The WebSocketContext provides a React context for WebSocket connections
-- Hooks like useServers, useMetrics, and useActivities use WebSockets for real-time updates
-- Components subscribe to relevant events and update their state accordingly
-
-
-### WebSocket Events
-
-| Event | Description
-|-----|-----
-| `server_update` | Emitted when a server's status or metrics change
-| `system_metrics` | Emitted when system-wide metrics are updated
-| `new_activity` | Emitted when a new activity is recorded
-| `console_update` | Emitted when console output is updated
-| `server_created` | Emitted when a new server is created
-| `server_deleted` | Emitted when a server is deleted
-| `backup_created` | Emitted when a new backup is created
-| `backup_restored` | Emitted when a backup is restored
-| `container_update` | Emitted when a Docker container status changes
-| `alert_triggered` | Emitted when a monitoring alert is triggered
-
-
-## System Architecture
+| Event              | Description                      |
+| ------------------ | -------------------------------- |
+| `server_update`    | Server status or metrics changed |
+| `system_metrics`   | Global system metrics updated    |
+| `new_activity`     | New activity logged              |
+| `console_update`   | Console output received          |
+| `server_created`   | New server instance created      |
+| `server_deleted`   | Server instance deleted          |
+| `backup_created`   | Backup completed                 |
+| `backup_restored`  | Backup restoration completed     |
+| `container_update` | Docker container status changed  |
+| `alert_triggered`  | Monitoring alert fired           |
 
 ### Database
 
-The system uses Prisma ORM with support for:
+* **Prisma ORM** supporting:
 
-- SQLite (development)
-- PostgreSQL (production)
-
-
-### Real-time Communication
-
-- Socket.IO for WebSocket connections
-- Custom Express server for API routes and WebSocket integration
-
+  * SQLite (development)
+  * PostgreSQL (production)
 
 ### Docker Integration
 
-- Container management (create, start, stop, restart)
-- Image management (pull, list)
-- Volume management (create, list)
-
+* Manage containers (create, start, stop, restart)
+* Pull and list images
+* Volume creation and listing
 
 ### Backup System
 
-- Manual and scheduled backups
-- Multiple storage options
-- Retention policies
-- One-click restore
+* Manual & scheduled backups
+* Multiple storage backends
+* Retention policies
+* One-click restore
 
+### Monitoring & Alerts
 
-### Monitoring
+* Real-time metrics collection (CPU, RAM, disk)
+* Historical data charts
+* Customizable alert thresholds
+* Email notifications on alerts
 
-- Real-time metrics collection
-- Historical data visualization
-- Alert thresholds configuration
-- Email notifications
-
+---
 
 ## Deployment
 
-To deploy this application to production:
+### Build & Start
 
-1. Build the application:
-
-
-```shellscript
+```bash
 npm run build
 # or
 yarn build
-```
-
-2. Start the production server:
-
-
-```shellscript
 npm start
 # or
 yarn start
@@ -174,67 +175,54 @@ yarn start
 
 ### Production Considerations
 
-- Use a process manager like PM2 to keep the application running
-- Set up a reverse proxy with Nginx or Apache
-- Configure SSL for secure connections
-- Use a production-ready database like PostgreSQL
+* Use a process manager (e.g., [PM2](https://pm2.keymetrics.io/)):
 
+  ```bash
+  pm2 start npm --name "game-server" -- start
+  pm2 save
+  pm2 startup
+  ```
+* Set up a reverse proxy (Nginx, Apache) with SSL
+* Use a robust database (PostgreSQL)
 
-```shellscript
-# Example PM2 startup
-pm2 start npm --name "game-server" -- start
-pm2 save
-pm2 startup
-```
+---
 
 ## Troubleshooting
 
-### Express 5.0.0 Path-to-RegExp Error
+* **Express Path-to-RegExp Error**:
 
-If you encounter this error:
+  ```js
+  // Update in server.js
+  // from:
+  expressApp.all('*', (req, res) => handle(req, res))
+  // to:
+  expressApp.all('/:path(*)', (req, res) => handle(req, res))
+  ```
 
-```plaintext
-TypeError: Missing parameter name at 1: https://git.new/pathToRegexpError
-```
+* **PostgreSQL Role Error**:
 
-This is due to Express 5.0.0 using path-to-regexp 8.0.0, which requires named parameters for wildcards. Fix by updating your server.js:
+  ```sql
+  CREATE ROLE gameserver WITH LOGIN PASSWORD 'password';
+  ALTER ROLE gameserver CREATEDB;
+  CREATE DATABASE gameserver OWNER gameserver;
+  ```
 
-```javascript
-// Change this:
-expressApp.all('*', (req, res) => {
-  return handle(req, res)
-})
+* **Port Conflict**: Change ports in `.env.local`:
 
-// To this:
-expressApp.all('/:path(*)', (req, res) => {
-  return handle(req, res)
-})
-```
+  ```dotenv
+  PORT=3001
+  NEXT_PUBLIC_SOCKET_URL=http://localhost:3001
+  NEXT_PUBLIC_API_URL=http://localhost:3001
+  ```
 
-### PostgreSQL Role Error
-
-If you encounter a PostgreSQL role error, ensure your database user exists and has the correct permissions:
-
-```sql
-CREATE ROLE gameserver WITH LOGIN PASSWORD 'password';
-ALTER ROLE gameserver CREATEDB;
-CREATE DATABASE gameserver OWNER gameserver;
-```
-
-### Port Conflicts
-
-If you encounter port conflicts, update your .env.local file to use different ports:
-
-```shellscript
-PORT=3001
-NEXT_PUBLIC_SOCKET_URL=http://localhost:3001
-NEXT_PUBLIC_API_URL=http://localhost:3001
-```
+---
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please open an issue or submit a pull request.
+
+---
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the [MIT License](LICENSE).
