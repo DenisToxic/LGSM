@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost:3000/api
+      - NEXT_PUBLIC_SOCKET_URL=ws://localhost:3001
+      - DATABASE_URL=postgresql://gameserver:Reloraftnix1!@db:5432/gameserver
+      - JWT_SECRET=your-secret-key-change-this-in-production
+    volumes:
+      - app-data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  db:
+    image: postgres:14-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=gameserver
+      - POSTGRES_PASSWORD=Reloraftnix1!
+      - POSTGRES_DB=gameserver
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"  # Changed to avoid port conflicts
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  app-data:
+  postgres-data:
