@@ -23,8 +23,8 @@ A comprehensive web-based Game Server Management System with real-time monitorin
 1. Clone the repository:
 
 \`\`\`bash
-git clone https://github.com/yourusername/game-server-management.git
-cd game-server-management
+git clone https://github.com/DenisToxic/test.git
+cd test
 \`\`\`
 
 2. Install dependencies:
