@@ -1,228 +1,254 @@
-**Game Server Management System**
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Docker Pulls](https://img.shields.io/docker/pulls/denistoxic/lgsm)](https://hub.docker.com/r/denistoxic/lgsm)
+[![GitHub Release](https://img.shields.io/github/v/release/DenisToxic/LGSM)](https://github.com/DenisToxic/LGSM/releases)
+[![Build Status](https://github.com/DenisToxic/LGSM/actions/workflows/ci.yml/badge.svg)](https://github.com/DenisToxic/LGSM/actions)
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/DenisToxic/LGSM/ci.yml?branch=main)](https://github.com/DenisToxic/LGSM/actions) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+## Game Server Management System
 
-A comprehensive web-based Game Server Management System with real-time monitoring, control, and automated resource management.
-
----
-
-## Table of Contents
-
-1. [Features](#features)
-2. [Getting Started](#getting-started)
-
-   * [Prerequisites](#prerequisites)
-   * [Installation](#installation)
-   * [Configuration](#configuration)
-   * [Running the App](#running-the-app)
-3. [Architecture Overview](#architecture-overview)
-
-   * [WebSocket Implementation](#websocket-implementation)
-   * [Database](#database)
-   * [Docker Integration](#docker-integration)
-   * [Backup System](#backup-system)
-   * [Monitoring & Alerts](#monitoring--alerts)
-4. [Deployment](#deployment)
-
-   * [Build & Start](#build--start)
-   * [Production Considerations](#production-considerations)
-5. [Troubleshooting](#troubleshooting)
-6. [Contributing](#contributing)
-7. [License](#license)
+A **web-based** platform for provisioning, monitoring, and managing game servers across multiple cloud providers, with real-time dashboards, alerts, and automated backups.
 
 ---
 
-## Features
+## 🚀 Table of Contents
 
-* **Real-time Server Monitoring** via WebSockets
-* **Server Lifecycle Management** (create, start, stop, restart)
-* **User Authentication & Authorization** (Role-based access)
-* **Interactive Console Access** to game servers
-* **Activity Tracking & Notifications**
-* **Resource Allocation & Usage Metrics**
-* **Automated Backups & One-click Restore**
-* **Docker Container Management** (images, volumes, containers)
-* **Cloud Deployment Support** (AWS, GCP, Azure, DigitalOcean, Linode)
-* **Advanced Monitoring Dashboard** with historical charts and alerts
-* **Detailed Reporting** (exportable logs & metrics)
+1. [Features](#features)  
+2. [Architecture](#architecture)  
+3. [Quick Start](#quick-start)  
+   - [Prerequisites](#prerequisites)  
+   - [Clone & Configure](#clone--configure)  
+   - [Docker Deployment](#docker-deployment)  
+4. [Configuration](#configuration)  
+   - [.env Variables](#env-variables)  
+   - [Docker Compose](#docker-compose)  
+5. [Usage](#usage)  
+   - [Web UI](#web-ui)  
+   - [CLI & API](#cli--api)  
+6. [WebSockets](#websockets)  
+   - [Events](#events)  
+7. [Backup & Restore](#backup--restore)  
+8. [Monitoring & Alerts](#monitoring--alerts)  
+9. [Troubleshooting](#troubleshooting)  
+10. [Production Deployment](#production-deployment)  
+11. [Contributing](#contributing)  
+12. [License](#license)
 
 ---
 
-## Getting Started
+## 🌟 Features
+
+- **Real-Time Monitoring**  
+  WebSockets-powered metrics, server status, and console logs.  
+- **Server Lifecycle**  
+  Create, start, stop, restart, and delete game server instances.  
+- **User Management**  
+  Role-based authentication & authorization (JWT, OAuth).  
+- **Console Access**  
+  In-browser terminal for each game server.  
+- **Activity Log & Notifications**  
+  Audit trail + email or Slack alerts on key events.  
+- **Resource Control**  
+  CPU, memory, and disk quotas per server with live usage charts.  
+- **Automated Backups**  
+  On-demand and scheduled, with retention policies.  
+- **Container Orchestration**  
+  Docker socket integration for image, container, and network management.  
+- **Cloud-Agnostic**  
+  Deploy to AWS, GCP, Azure, DigitalOcean, Linode, and more.  
+- **Dashboard & Reporting**  
+  Customizable alerts, historical charts, and exportable PDF/CSV reports.
+
+---
+
+## 🏗 Architecture
+
+[ Browser ] <--WebSockets--> [ Next.js & Express ] <--REST--> [ PostgreSQL ]
+|
++-- Docker Engine
+|
++-- Backup Storage (S3, GCS, Azure Blob)
+
+markdown
+Copy
+Edit
+
+- **Frontend:** Next.js + React, Tailwind, Socket.IO  
+- **Backend:** Node.js + Express, Prisma ORM  
+- **Database:** PostgreSQL (prod), SQLite (dev)  
+- **Container Runtime:** Docker Engine
+
+---
+
+## ⚡ Quick Start
 
 ### Prerequisites
 
-* [Node.js](https://nodejs.org/) v18.x or higher
-* [npm](https://www.npmjs.com/) or [Yarn](https://yarnpkg.com/)
-* [Docker](https://www.docker.com/) *(optional, for container management)*
-* [PostgreSQL](https://www.postgresql.org/) *(optional, for production database)*
+- Docker & Docker Compose  
+- Git
 
-### Installation
-
-1. **Clone the repository**
-
-   ```bash
-   git clone https://github.com/DenisToxic/LGSM.git
-   cd LGSM
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
-
-### Configuration
-
-Create a `.env.local` in the project root with the following variables:
-
-```dotenv
-# Server settings
-PORT=3000
-NODE_ENV=development
-
-# WebSocket & API URLs
-NEXT_PUBLIC_SOCKET_URL=http://localhost:3000
-NEXT_PUBLIC_API_URL=http://localhost:3000
-
-# Database (PostgreSQL)
-DATABASE_URL="postgresql://postgres:password@localhost:5432/gameserver"
-
-# Docker (if using container features)
-DOCKER_HOST="unix:///var/run/docker.sock"
-```
-
-### Running the App
-
-Start the development server:
+### Clone & Configure
 
 ```bash
-npm run dev
-# or
-yarn dev
-```
+git clone https://github.com/DenisToxic/LGSM.git
+cd LGSM
+cp .env.example .env
+Docker Deployment
+bash
+Copy
+Edit
+docker-compose up -d --build
+Visit http://localhost:3000 and log in with the default admin credentials:
 
-Open your browser at [http://localhost:3000](http://localhost:3000).
+txt
+Copy
+Edit
+Email: admin@example.com
+Password: password123
+⚙️ Configuration
+.env Variables
+Key	Description	Example
+NODE_ENV	Environment mode (development/production)	production
+PORT	HTTP port	3000
+NEXT_PUBLIC_SOCKET_URL	WebSocket endpoint	http://localhost:3000
+NEXT_PUBLIC_API_URL	API base URL	http://localhost:3000/api
+DATABASE_URL	PostgreSQL DSN	postgresql://postgres:pass@postgres:5432/gameserver
+DOCKER_HOST	Docker socket path	/var/run/docker.sock
 
----
+docker-compose.yml
+yaml
+Copy
+Edit
+version: "3.8"
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    restart: unless-stopped
 
-## Architecture Overview
+  postgres:
+    image: postgres:14
+    env:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: gameserver
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
 
-### WebSocket Implementation
+volumes:
+  postgres_data:
+💻 Usage
+Web UI
+Dashboard: Overview of server health, metrics, and alerts.
 
-* Uses **Socket.IO** for bidirectional real-time communication.
-* **Server-Side**: Custom Express server integrates Next.js and Socket.IO. Emits events for updates and metrics.
-* **Client-Side**: `WebSocketContext` provides hooks (`useServers`, `useMetrics`, `useActivities`) for subscribing to events.
+Servers: List, search, create, and manage game instances.
 
-**Key Events**:
+Backups: Configure retention, trigger manual restores.
 
-| Event              | Description                      |
-| ------------------ | -------------------------------- |
-| `server_update`    | Server status or metrics changed |
-| `system_metrics`   | Global system metrics updated    |
-| `new_activity`     | New activity logged              |
-| `console_update`   | Console output received          |
-| `server_created`   | New server instance created      |
-| `server_deleted`   | Server instance deleted          |
-| `backup_created`   | Backup completed                 |
-| `backup_restored`  | Backup restoration completed     |
-| `container_update` | Docker container status changed  |
-| `alert_triggered`  | Monitoring alert fired           |
+Settings: User roles, notification channels, alert thresholds.
 
-### Database
+CLI & API
+All operations exposed via REST at /api/v1. Example, list servers:
 
-* **Prisma ORM** supporting:
+bash
+Copy
+Edit
+curl -H "Authorization: Bearer $TOKEN" http://localhost:3000/api/v1/servers
+🔗 WebSockets
+How It Works
+Server: Express + Socket.IO instance broadcasts events.
 
-  * SQLite (development)
-  * PostgreSQL (production)
+Client: React hooks (useServers, useMetrics, etc.) subscribe and update in real time.
 
-### Docker Integration
+Events
+Event	Payload Description
+server_update	{ id, status, metrics }
+system_metrics	{ cpu, memory, disk }
+new_activity	{ user, action, timestamp }
+console_update	{ serverId, output }
+server_created	{ id, name, config }
+server_deleted	{ id }
+backup_created	{ id, serverId, timestamp }
+backup_restored	{ id, serverId, timestamp }
+container_update	{ containerId, status }
+alert_triggered	{ alertId, level, details }
 
-* Manage containers (create, start, stop, restart)
-* Pull and list images
-* Volume creation and listing
+💾 Backup & Restore
+Manual: Click “Backup” on a server panel.
 
-### Backup System
+Scheduled: Cron-style schedules via UI.
 
-* Manual & scheduled backups
-* Multiple storage backends
-* Retention policies
-* One-click restore
+Storage: Local, S3, GCS, Azure Blob.
 
-### Monitoring & Alerts
+Retention: Configure max snapshots per server.
 
-* Real-time metrics collection (CPU, RAM, disk)
-* Historical data charts
-* Customizable alert thresholds
-* Email notifications on alerts
+📈 Monitoring & Alerts
+Thresholds: CPU, RAM, disk, latency.
 
----
+Notifications: Email, Slack, Webhook.
 
-## Deployment
+Dashboard: Live graphs + historical trends.
 
-### Build & Start
+Reports: Export CSV/PDF of usage and uptime.
 
-```bash
-npm run build
-# or
-yarn build
-npm start
-# or
-yarn start
-```
+🛠 Troubleshooting
+Express 5 Path-to-RegExp Error
+diff
+Copy
+Edit
+- expressApp.all('*', (req, res) => handle(req, res))
++ expressApp.all('/:path(*)', (req, res) => handle(req, res))
+Docker Socket Permission
+bash
+Copy
+Edit
+sudo usermod -aG docker $USER
+# or (less secure):
+sudo chmod 666 /var/run/docker.sock
+Network Issues
+bash
+Copy
+Edit
+docker network create game-server-network
+docker run --network game-server-network ...
+DB Connection
+docker ps – ensure postgres is running
 
-### Production Considerations
+docker logs postgres – inspect errors
 
-* Use a process manager (e.g., [PM2](https://pm2.keymetrics.io/)):
+docker exec -it postgres psql -U postgres – manual check
 
-  ```bash
-  pm2 start npm --name "game-server" -- start
-  pm2 save
-  pm2 startup
-  ```
-* Set up a reverse proxy (Nginx, Apache) with SSL
-* Use a robust database (PostgreSQL)
+🚢 Production Deployment
+Use Traefik or NGINX for SSL/TLS termination
 
----
+Deploy via Docker Swarm or Kubernetes
 
-## Troubleshooting
+Separate Backup and DB hosts
 
-* **Express Path-to-RegExp Error**:
+Centralize logs (ELK, Prometheus + Grafana)
 
-  ```js
-  // Update in server.js
-  // from:
-  expressApp.all('*', (req, res) => handle(req, res))
-  // to:
-  expressApp.all('/:path(*)', (req, res) => handle(req, res))
-  ```
+yaml
+Copy
+Edit
+# (see examples/traefik-compose.yml for full config)
+🤝 Contributing
+Fork & clone
 
-* **PostgreSQL Role Error**:
+Create a feature branch: git checkout -b feature/my-feature
 
-  ```sql
-  CREATE ROLE gameserver WITH LOGIN PASSWORD 'password';
-  ALTER ROLE gameserver CREATEDB;
-  CREATE DATABASE gameserver OWNER gameserver;
-  ```
+Commit & push: git commit -am "Add my feature"
 
-* **Port Conflict**: Change ports in `.env.local`:
+Open a pull request against main
 
-  ```dotenv
-  PORT=3001
-  NEXT_PUBLIC_SOCKET_URL=http://localhost:3001
-  NEXT_PUBLIC_API_URL=http://localhost:3001
-  ```
+Fill out the PR template and await review
 
----
+Please follow our Code of Conduct and Contribution Guidelines.
 
-## Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request.
-
----
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
+📄 License
+This project is licensed under the MIT License. See LICENSE for details.
